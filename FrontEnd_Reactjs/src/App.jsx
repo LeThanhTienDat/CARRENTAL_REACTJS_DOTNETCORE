@@ -1,35 +1,35 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import "./App.css";
+import Sidebar from "./assets/Components/SideBar";
+import Header from "./assets/Components/Header";
+import { BrowserRouter, Routes, Route } from "react-router";
+import CarList from "./Cars/CarList";
+import CategoryList from "./Categories/CategoryList";
+import Home from "./Home/Home";
+import UserList from "./Users/UserList"
+
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [open, setOpen] = useState(true);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <BrowserRouter>
+      <div className="flex">
+        <Sidebar open={open} setOpen={setOpen} />
+        <div className="flex-1">
+          <Header open={open} />
+          <main className="mt-2 p-4">
+            <Routes>
+              <Route path="/" element={<Home />}></Route>
+              <Route path="/car" element={<CarList />}></Route>
+              <Route path="/category" element={<CategoryList />}></Route>
+              <Route path="/user" element={<UserList />}></Route>
+            </Routes>
+          </main>
+        </div>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
