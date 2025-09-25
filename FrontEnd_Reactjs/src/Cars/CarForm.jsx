@@ -2,13 +2,16 @@ import { useFormik } from "formik";
 import { useEffect, useState } from "react";
 import { string, object, number, mixed } from "yup";
 import { UploadImgToCloudinary } from "../Helper/UploadHelper";
+import { RemoveCloudImg } from "../Helper/RemoveCloudImgHelper";
 
-export default function CarForm({ initialValues, onClose, mode }) {
+export default function CarForm({ initialValues, onClose, mode, onSuccess }) {
   const [city, setCity] = useState([]);
   const [district, setDistrict] = useState([]);
   const [category, setCategory] = useState([]);
   const [carType, setCarType] = useState([]);
-
+  const [imgUrl, setImgUrl] = useState(initialValues.image);
+  const [file, setFile] = useState(null);
+  const [countFileChange, setCountFileChange] = useState(0);
   useEffect(() => {
     fetch("https://localhost:7191/api/City")
       .then((rep) => rep.json())
@@ -19,6 +22,26 @@ export default function CarForm({ initialValues, onClose, mode }) {
       .catch((err) => console.log(err));
   }, []);
 
+  useEffect(() => {
+    if (mode === "edit" && initialValues?.cityId) {
+      const fetchDistrict = async () => {
+        try {
+          const res = await fetch(
+            `https://localhost:7191/api/District/get-by-cityid/${initialValues.cityId}`
+          );
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0) {
+            setDistrict(data);
+          } else {
+            setDistrict([]);
+          }
+        } catch (err) {
+          console.log(err);
+        }
+      };
+      fetchDistrict();
+    }
+  }, [mode, initialValues?.cityId]);
   useEffect(() => {
     fetch("https://localhost:7191/api/Category")
       .then((rep) => rep.json())
@@ -41,13 +64,23 @@ export default function CarForm({ initialValues, onClose, mode }) {
     pricePerDay: number().required().min(1000).max(100000000),
     carStatus: string().required(),
     carTypeId: number().required(),
-    category: number().required(),
-    image: mixed().required(),
+    cateId: number().required(),
+    image: mixed().when([], {
+      is: () => mode === "add",
+      then: (schema) => schema.required("Image is required"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
     active: number().required(),
     address: string().required(),
     cityId: number().required(),
   });
-  const [preview, setPreview] = useState(null);
+
+  const [preview, setPreview] = useState(initialValues?.image || null);
+  useEffect(() => {
+    if (initialValues?.image) {
+      setPreview(initialValues.image);
+    }
+  }, [initialValues]);
   const handleUpload = async (file) => {
     if (!file) return;
 
@@ -56,30 +89,77 @@ export default function CarForm({ initialValues, onClose, mode }) {
     return url;
   };
   const handleFileChange = async (e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setPreview(URL.createObjectURL(file));
-      const url = await handleUpload(file);
-      setFieldValue("image", url);
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+      setPreview(URL.createObjectURL(selectedFile));
+      await setFieldValue("image", "temp");
+      setFieldTouched("image", true);
     }
   };
   const formik = useFormik({
     initialValues,
     onSubmit: async (data) => {
-      if (mode === "add") {
-        const res = await fetch("https://localhost:7191/api/Car", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        });
-        if (!res.ok) throw new Error("Add new Car failed!");
-        if (res.status === 201) alert("Add success!");
-      } else {
-        console.log("Edit form.");
+      try {
+        if (mode === "add") {
+          if (file) {
+            const url = await handleUpload(file);
+            data.image = url;
+          }
+          const res = await fetch("https://localhost:7191/api/Car", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          });
+          if (!res.ok) throw new Error("Add new Car failed!");
+          const newCar = await res.json();
+          console.log(newCar);
+          if (res.status === 201) {
+            alert("Add success!");
+            if (typeof onSuccess === "function") onSuccess(newCar, "add");
+          }
+          console.log(data);
+        } else if (mode === "edit") {
+          if (countFileChange === 0) {
+            data.image = null;
+          } else {
+            if (file) {
+              const url = await handleUpload(file);
+              data.image = url;
+            }
+          }
+          const res = await fetch(
+            `https://localhost:7191/api/Car/${data.carId}`,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(data),
+            }
+          );
+          if (!res.ok) throw new Error("Add new Car failed!");
+          const editedCar = await res.json();
+          if (res.status === 200) {
+            alert("Update success!");
+            await fetch("https://localhost:7191/api/cloudinary/delete", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(
+                imgUrl
+              ),
+            });
+            if (typeof onSuccess === "function") onSuccess(editedCar, "edit");
+          }
+        }
+      } catch (err) {
+        console.log(err);
+        alert(err.message || "something when wrong!");
+      } finally {
+        onClose();
       }
-      onClose();
     },
     validationSchema: validator,
     enableReinitialize: true,
@@ -90,6 +170,7 @@ export default function CarForm({ initialValues, onClose, mode }) {
     handleChange,
     handleSubmit,
     setFieldValue,
+    setFieldTouched,
     touched,
     errors,
   } = formik;
@@ -108,7 +189,7 @@ export default function CarForm({ initialValues, onClose, mode }) {
         >
           <div className="mb-3">
             <input
-              // value={formik.values.brand}
+              value={formik.values.brand}
               type="text"
               name="brand"
               onBlur={handleBlur}
@@ -124,7 +205,7 @@ export default function CarForm({ initialValues, onClose, mode }) {
           <div className="mb-3">
             <input
               type="text"
-              //   value={formik.values.model}
+              value={formik.values.model}
               placeholder="Model"
               onBlur={handleBlur}
               onChange={handleChange}
@@ -141,7 +222,7 @@ export default function CarForm({ initialValues, onClose, mode }) {
               <div className="relative">
                 <input
                   type="text"
-                  //   value={formik.values.licensePlate}
+                  value={formik.values.licensePlate}
                   name="licensePlate"
                   onBlur={handleBlur}
                   onChange={handleChange}
@@ -159,7 +240,7 @@ export default function CarForm({ initialValues, onClose, mode }) {
               <div className="relative">
                 <input
                   type="number"
-                  //   value={formik.values.seatCount}
+                  value={formik.values.seatCount}
                   onBlur={handleBlur}
                   onChange={handleChange}
                   name="seatCount"
@@ -183,7 +264,7 @@ export default function CarForm({ initialValues, onClose, mode }) {
                 </span>
                 <input
                   type="number"
-                  //   value={formik.values.pricePerDay}
+                  value={formik.values.pricePerDay}
                   onBlur={handleBlur}
                   onChange={handleChange}
                   placeholder="Price Per Day"
@@ -202,7 +283,7 @@ export default function CarForm({ initialValues, onClose, mode }) {
               <div className="relative">
                 <select
                   name="carStatus"
-                  //   value={formik.values.carStatus}
+                  value={formik.values.carStatus}
                   onBlur={handleBlur}
                   onChange={handleChange}
                   id=""
@@ -228,7 +309,7 @@ export default function CarForm({ initialValues, onClose, mode }) {
                   type="text"
                   placeholder="Color"
                   name="color"
-                  //   value={formik.values.color}
+                  value={formik.values.color}
                   onBlur={handleBlur}
                   onChange={handleChange}
                   className="pl-2 py-2 border-b border-gray-400 w-full h-10"
@@ -243,7 +324,7 @@ export default function CarForm({ initialValues, onClose, mode }) {
               <div className="relative">
                 <select
                   name="active"
-                  //   value={formik.values.active}
+                  value={formik.values.active}
                   onBlur={handleBlur}
                   onChange={handleChange}
                   id=""
@@ -263,40 +344,42 @@ export default function CarForm({ initialValues, onClose, mode }) {
             <div className="w-1/2">
               <div className="relative">
                 <select
-                  name="category"
-                  //   value={formik.values.cityId}
+                  name="cateId"
+                  value={formik.values.cateId}
                   onBlur={handleBlur}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    setFieldValue("cateId", Number(e.target.value));
+                  }}
                   id=""
                   className="pl-1 py-2 border-b border-gray-400 w-full text-gray-600"
                 >
-                  <option value={null} disabled selected hidden>
-                    Select Category
+                  <option value="" disabled>
+                    Chose Category
                   </option>
                   {category.map((item) => (
-                    <option key={item.cateId} value={item.title}>
+                    <option key={item.cateId} value={item.cateId}>
                       {item.title}
                     </option>
                   ))}
                 </select>
               </div>
               <span className="block errorMess text-sm text-red-500 min-h-[20px]">
-                {touched.category && errors.category
-                  ? errors.category
-                  : undefined}
+                {touched.cateId && errors.cateId ? errors.cateId : undefined}
               </span>
 
               <div className="relative">
                 <select
                   name="carTypeId"
-                  //   value={formik.values.carTypeName}
+                  value={formik.values.carTypeId || ""}
                   onBlur={handleBlur}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    setFieldValue("carTypeId", Number(e.target.value));
+                  }}
                   id=""
                   className="pl-1 py-2 border-b border-gray-400 w-full text-gray-600 h-10"
                 >
-                  <option value={null} disabled selected hidden>
-                    Select Car's Type
+                  <option value="" disabled>
+                    Chose Car's Type
                   </option>
                   {carType.map((item) => (
                     <option key={item.carTypeId} value={item.carTypeId}>
@@ -315,7 +398,7 @@ export default function CarForm({ initialValues, onClose, mode }) {
                 <input
                   type="text"
                   placeholder="Address"
-                  // value={formik.values.address}
+                  value={formik.values.address}
                   onBlur={handleBlur}
                   onChange={handleChange}
                   name="address"
@@ -328,11 +411,13 @@ export default function CarForm({ initialValues, onClose, mode }) {
               <div className="relative">
                 <select
                   name="cityId"
-                  //   value={formik.values.cityId}
+                  value={formik.values.cityId}
                   onBlur={handleBlur}
                   onChange={async (e) => {
                     handleChange(e);
-                    const selectedCityId = e.target.value;
+                    const selectedCityId = Number(e.target.value);
+                    setFieldValue("cityId", selectedCityId);
+                    setFieldValue("districtId", null);
                     try {
                       const res = await fetch(
                         `https://localhost:7191/api/District/get-by-cityid/${selectedCityId}`
@@ -351,7 +436,7 @@ export default function CarForm({ initialValues, onClose, mode }) {
                   id=""
                   className="pl-1 py-2 border-b border-gray-400 w-full text-gray-600"
                 >
-                  <option value={null} disabled selected hidden>
+                  <option value="" disabled selected hidden>
                     Select City
                   </option>
                   {city.map((item) => (
@@ -367,13 +452,13 @@ export default function CarForm({ initialValues, onClose, mode }) {
               <div className="relative">
                 <select
                   name="districtId"
-                  //   value={formik.values.districtId}
+                  value={formik.values.districtId}
                   id=""
                   onBlur={handleBlur}
                   onChange={handleChange}
                   className="pl-1 py-2 border-b border-gray-400 w-full text-gray-600"
                 >
-                  <option value={null} disabled selected hidden>
+                  <option value="" disabled selected hidden>
                     Select District
                   </option>
                   {district.map((item) => (
@@ -392,6 +477,7 @@ export default function CarForm({ initialValues, onClose, mode }) {
                 <button
                   className="px-4 py-2 bg-gray-300 rounded-md cursor-pointer"
                   onClick={onClose}
+                  type="button"
                 >
                   Cancel
                 </button>
@@ -410,6 +496,8 @@ export default function CarForm({ initialValues, onClose, mode }) {
                     type="file"
                     name="image"
                     onChange={(e) => {
+                      if (mode === "edit")
+                        setCountFileChange((prev) => prev + 1);
                       handleFileChange(e);
                     }}
                     className=" block w-full text-sm text-gray-700 
@@ -420,6 +508,11 @@ export default function CarForm({ initialValues, onClose, mode }) {
                                   hover:file:bg-blue-100"
                   />
                 </div>
+                {mode === "edit" && (
+                  <p className="text-red-600 text-sm mt-1">
+                    ❗ If you want to change the image, please choose a new one.
+                  </p>
+                )}
                 <span className="block errorMess text-sm text-red-500 min-h-[20px]">
                   {touched.image && errors.image ? errors.image : undefined}
                 </span>

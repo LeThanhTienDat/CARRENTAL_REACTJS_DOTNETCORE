@@ -4,5 +4,5 @@ export const ChangeNameImg = (rawName) => {
 
   const randomString = Math.random().toString(36).substring(2, 10);
 
-  return randomString + "." + extension;
+  return randomString;
 };

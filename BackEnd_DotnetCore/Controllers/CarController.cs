@@ -25,13 +25,15 @@ namespace BackEnd_DotnetCore.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CarDTO>>> GetTblCars()
         {
-            return await _context.TblCars
+            var cars = await _context.TblCars
                 .Include(c => c.Cate)
                 .Include(c => c.CarType)
                 .Include(c => c.District)
                 .Include(c => c.City)
+                .OrderByDescending(c => c.CarId)
                 .Select(c => new CarDTO
                 {
+                    
                     CarId = c.CarId,
                     CateId = c.Cate != null ? c.Cate.CateId : null,
                     CateName = c.Cate != null ? c.Cate.Title : null,
@@ -48,24 +50,91 @@ namespace BackEnd_DotnetCore.Controllers
                     CarTypeName = c.CarType != null ? c.CarType.CarTypeName : null,
                     DistrictId = c.District != null ? c.District.DistrictId : null,
                     DistrictName = c.District != null ? c.District.DistrictName : null,
+                    CityId = c.City != null ? c.City.CityId : null,
+                    CityName = c.City != null ? c.City.CityName : null,
                     Address = c.Address != null ? c.Address : null
                 }).ToListAsync();
+            var carWithIndex = cars.Select((car, index) =>
+            {
+                car.OrderNumber = index + 1;
+                return car;
+            }).ToList();
+            return carWithIndex;
         }
 
         // GET: api/Car/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<TblCar>> GetTblCar(int id)
+        public async Task<ActionResult<CarDTO>> GetTblCar(int id)
         {
-            var tblCar = await _context.TblCars.FindAsync(id);
+            var car = await _context.TblCars
+                 .Include(c => c.Cate)
+                 .Include(c => c.CarType)
+                 .Include(c => c.District)
+                 .Include(c => c.City)
+                 .Where(c => c.CarId == id)
+                 .Select(c => new CarDTO
+                 {
 
-            if (tblCar == null)
+                     CarId = c.CarId,
+                     CateId = c.Cate != null ? c.Cate.CateId : null,
+                     CateName = c.Cate != null ? c.Cate.Title : null,
+                     Active = c.Active,
+                     Brand = c.Brand,
+                     Model = c.Model,
+                     PricePerDay = c.PricePerDay,
+                     CarStatus = c.CarStatus,
+                     Image = c.Image,
+                     LicensePlate = c.LicensePlate,
+                     SeatCount = c.SeatCount,
+                     Color = c.Color,
+                     CarTypeId = c.CarType != null ? c.CarType.CarTypeId : null,
+                     CarTypeName = c.CarType != null ? c.CarType.CarTypeName : null,
+                     DistrictId = c.District != null ? c.District.DistrictId : null,
+                     DistrictName = c.District != null ? c.District.DistrictName : null,
+                     CityId = c.City != null ? c.City.CityId : null,
+                     CityName = c.City != null ? c.City.CityName : null,
+                     Address = c.Address != null ? c.Address : null
+                 }).FirstOrDefaultAsync();
+            if(car == null)
             {
                 return NotFound();
             }
-
-            return tblCar;
+            else
+            {
+                return car;
+            }
         }
-
+        private async Task<CarDTO?> GetCarDtoById(int id)
+        {
+            return await _context.TblCars
+                .Include(c => c.Cate)
+                .Include(c => c.CarType)
+                .Include(c => c.District)
+                .Include(c => c.City)
+                .Where(c => c.CarId == id)
+                .Select(c => new CarDTO
+                {
+                    CarId = c.CarId,
+                    CateId = c.Cate != null ? c.Cate.CateId : null,
+                    CateName = c.Cate != null ? c.Cate.Title : null,
+                    Active = c.Active,
+                    Brand = c.Brand,
+                    Model = c.Model,
+                    PricePerDay = c.PricePerDay,
+                    CarStatus = c.CarStatus,
+                    Image = c.Image,
+                    LicensePlate = c.LicensePlate,
+                    SeatCount = c.SeatCount,
+                    Color = c.Color,
+                    CarTypeId = c.CarType != null ? c.CarType.CarTypeId : null,
+                    CarTypeName = c.CarType != null ? c.CarType.CarTypeName : null,
+                    DistrictId = c.District != null ? c.District.DistrictId : null,
+                    DistrictName = c.District != null ? c.District.DistrictName : null,
+                    CityId = c.City != null ? c.City.CityId : null,
+                    CityName = c.City != null ? c.City.CityName : null,
+                    Address = c.Address
+                }).FirstOrDefaultAsync();
+        }
         // PUT: api/Car/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
@@ -75,12 +144,33 @@ namespace BackEnd_DotnetCore.Controllers
             {
                 return BadRequest();
             }
-
-            _context.Entry(tblCar).State = EntityState.Modified;
-
+        
             try
             {
-                await _context.SaveChangesAsync();
+                var car = await _context.TblCars.FindAsync(id);
+                if(car == null) return NotFound();
+                car.CateId = tblCar.CateId;
+                car.Brand = tblCar.Brand;
+                car.Model = tblCar.Model;
+                car.PricePerDay = tblCar.PricePerDay;
+                car.CarStatus = tblCar.CarStatus;   
+                if (!string.IsNullOrEmpty(tblCar.Image))
+                {
+                    car.Image = tblCar.Image;
+                }
+                car.LicensePlate = tblCar.LicensePlate;
+                car.SeatCount = tblCar.SeatCount;   
+                car.Color = tblCar.Color;
+                car.CarTypeId = tblCar.CarTypeId;
+                car.Active = tblCar.Active;
+                car.DistrictId = tblCar.DistrictId;
+                car.Address = tblCar.Address;
+                car.CityId = tblCar.CityId;
+
+                await _context.SaveChangesAsync();            
+                //var editedCar = await GetCarDtoById(id);
+                //if (editedCar == null) return NotFound();
+                return Ok(car);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -94,7 +184,7 @@ namespace BackEnd_DotnetCore.Controllers
                 }
             }
 
-            return NoContent();
+            
         }
 
         // POST: api/Car

@@ -61,7 +61,7 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "BackEnd_DotnetCore.Models.TblCar",
+        "Type": "BackEnd_DotnetCore.DTOs.CarDTO",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -430,6 +430,22 @@
       {
         "Name": "id",
         "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BackEnd_DotnetCore.Controllers.CloudinaryController",
+    "Method": "DeleteImage",
+    "RelativePath": "api/Cloudinary/delete",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "imageUrl",
+        "Type": "System.String",
         "IsRequired": true
       }
     ],

@@ -266,3 +266,5 @@ C:\hoc lap trinh\DotNet\WEB_FRONTEND_REACTJS\Project_CARRENTAL_API\BackEnd_Dotne
 C:\hoc lap trinh\DotNet\WEB_FRONTEND_REACTJS\Project_CARRENTAL_API\BackEnd_DotnetCore\bin\Debug\net9.0\zh-Hans\Microsoft.CodeAnalysis.Scripting.resources.dll
 C:\hoc lap trinh\DotNet\WEB_FRONTEND_REACTJS\Project_CARRENTAL_API\BackEnd_DotnetCore\bin\Debug\net9.0\zh-Hant\Microsoft.CodeAnalysis.Scripting.resources.dll
 C:\hoc lap trinh\DotNet\WEB_FRONTEND_REACTJS\Project_CARRENTAL_API\BackEnd_DotnetCore\obj\Debug\net9.0\staticwebassets.upToDateCheck.txt
+C:\hoc lap trinh\DotNet\WEB_FRONTEND_REACTJS\Project_CARRENTAL_API\BackEnd_DotnetCore\obj\Debug\net9.0\BackEnd_DotnetCore.sourcelink.json
+C:\hoc lap trinh\DotNet\WEB_FRONTEND_REACTJS\Project_CARRENTAL_API\BackEnd_DotnetCore\bin\Debug\net9.0\CloudinaryDotNet.dll
