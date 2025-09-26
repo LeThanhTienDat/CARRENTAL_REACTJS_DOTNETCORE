@@ -3,6 +3,18 @@
   "WorkspaceRootPath": "C:\\hoc lap trinh\\DotNet\\WEB_FRONTEND_REACTJS\\Project_CARRENTAL_API\\BackEnd_DotnetCore\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{D5BD5EA3-AD47-45BB-946C-C04AF15A1DB4}|BackEnd_DotnetCore.csproj|c:\\hoc lap trinh\\dotnet\\web_frontend_reactjs\\project_carrental_api\\backend_dotnetcore\\models\\carrentalapicontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D5BD5EA3-AD47-45BB-946C-C04AF15A1DB4}|BackEnd_DotnetCore.csproj|solutionrelative:models\\carrentalapicontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D5BD5EA3-AD47-45BB-946C-C04AF15A1DB4}|BackEnd_DotnetCore.csproj|c:\\hoc lap trinh\\dotnet\\web_frontend_reactjs\\project_carrental_api\\backend_dotnetcore\\models\\tblbooking.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D5BD5EA3-AD47-45BB-946C-C04AF15A1DB4}|BackEnd_DotnetCore.csproj|solutionrelative:models\\tblbooking.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D5BD5EA3-AD47-45BB-946C-C04AF15A1DB4}|BackEnd_DotnetCore.csproj|c:\\hoc lap trinh\\dotnet\\web_frontend_reactjs\\project_carrental_api\\backend_dotnetcore\\controllers\\tblbookingscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D5BD5EA3-AD47-45BB-946C-C04AF15A1DB4}|BackEnd_DotnetCore.csproj|solutionrelative:controllers\\tblbookingscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{D5BD5EA3-AD47-45BB-946C-C04AF15A1DB4}|BackEnd_DotnetCore.csproj|c:\\hoc lap trinh\\dotnet\\web_frontend_reactjs\\project_carrental_api\\backend_dotnetcore\\controllers\\carcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{D5BD5EA3-AD47-45BB-946C-C04AF15A1DB4}|BackEnd_DotnetCore.csproj|solutionrelative:controllers\\carcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -34,15 +46,56 @@
       "DocumentGroups": [
         {
           "DockedHeight": 200,
-          "SelectedChildIndex": 7,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
             },
             {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
+            },
+            {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 0,
+              "Title": "CarRentalApiContext.cs",
+              "DocumentMoniker": "C:\\hoc lap trinh\\DotNet\\WEB_FRONTEND_REACTJS\\Project_CARRENTAL_API\\BackEnd_DotnetCore\\Models\\CarRentalApiContext.cs",
+              "RelativeDocumentMoniker": "Models\\CarRentalApiContext.cs",
+              "ToolTip": "C:\\hoc lap trinh\\DotNet\\WEB_FRONTEND_REACTJS\\Project_CARRENTAL_API\\BackEnd_DotnetCore\\Models\\CarRentalApiContext.cs",
+              "RelativeToolTip": "Models\\CarRentalApiContext.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-25T12:06:17.553Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "TblBooking.cs",
+              "DocumentMoniker": "C:\\hoc lap trinh\\DotNet\\WEB_FRONTEND_REACTJS\\Project_CARRENTAL_API\\BackEnd_DotnetCore\\Models\\TblBooking.cs",
+              "RelativeDocumentMoniker": "Models\\TblBooking.cs",
+              "ToolTip": "C:\\hoc lap trinh\\DotNet\\WEB_FRONTEND_REACTJS\\Project_CARRENTAL_API\\BackEnd_DotnetCore\\Models\\TblBooking.cs",
+              "RelativeToolTip": "Models\\TblBooking.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-25T12:06:03.184Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "TblBookingsController.cs",
+              "DocumentMoniker": "C:\\hoc lap trinh\\DotNet\\WEB_FRONTEND_REACTJS\\Project_CARRENTAL_API\\BackEnd_DotnetCore\\Controllers\\TblBookingsController.cs",
+              "RelativeDocumentMoniker": "Controllers\\TblBookingsController.cs",
+              "ToolTip": "C:\\hoc lap trinh\\DotNet\\WEB_FRONTEND_REACTJS\\Project_CARRENTAL_API\\BackEnd_DotnetCore\\Controllers\\TblBookingsController.cs",
+              "RelativeToolTip": "Controllers\\TblBookingsController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-25T12:05:57.288Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\hoc lap trinh\\DotNet\\WEB_FRONTEND_REACTJS\\Project_CARRENTAL_API\\BackEnd_DotnetCore\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
@@ -50,12 +103,11 @@
               "RelativeToolTip": "Program.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAABjAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-24T12:43:03.717Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-09-24T12:43:03.717Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 5,
               "Title": "CloudinarySetting.cs",
               "DocumentMoniker": "C:\\hoc lap trinh\\DotNet\\WEB_FRONTEND_REACTJS\\Project_CARRENTAL_API\\BackEnd_DotnetCore\\Models\\CloudinarySetting.cs",
               "RelativeDocumentMoniker": "Models\\CloudinarySetting.cs",
@@ -63,12 +115,11 @@
               "RelativeToolTip": "Models\\CloudinarySetting.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-24T12:42:34.889Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-09-24T12:42:34.889Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 4,
               "Title": "CloudinaryController.cs",
               "DocumentMoniker": "C:\\hoc lap trinh\\DotNet\\WEB_FRONTEND_REACTJS\\Project_CARRENTAL_API\\BackEnd_DotnetCore\\Controllers\\CloudinaryController.cs",
               "RelativeDocumentMoniker": "Controllers\\CloudinaryController.cs",
@@ -76,12 +127,11 @@
               "RelativeToolTip": "Controllers\\CloudinaryController.cs",
               "ViewState": "AgIAABYAAAAAAAAAAAAAwBkAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-24T12:40:20.417Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-09-24T12:40:20.417Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 8,
               "Title": "CloudinaryHelper.cs",
               "DocumentMoniker": "C:\\hoc lap trinh\\DotNet\\WEB_FRONTEND_REACTJS\\Project_CARRENTAL_API\\BackEnd_DotnetCore\\Helpers\\CloudinaryHelper.cs",
               "RelativeDocumentMoniker": "Helpers\\CloudinaryHelper.cs",
@@ -89,12 +139,11 @@
               "RelativeToolTip": "Helpers\\CloudinaryHelper.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-24T12:35:37.574Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-09-24T12:35:37.574Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 6,
               "Title": "appsettings.json",
               "DocumentMoniker": "C:\\hoc lap trinh\\DotNet\\WEB_FRONTEND_REACTJS\\Project_CARRENTAL_API\\BackEnd_DotnetCore\\appsettings.json",
               "RelativeDocumentMoniker": "appsettings.json",
@@ -102,16 +151,11 @@
               "RelativeToolTip": "appsettings.json",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-09-24T12:33:07.809Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:8:0:{e8034f19-ab72-4f06-83fd-f6832b41aa63}"
+              "WhenOpened": "2025-09-24T12:33:07.809Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 3,
               "Title": "CarController.cs",
               "DocumentMoniker": "C:\\hoc lap trinh\\DotNet\\WEB_FRONTEND_REACTJS\\Project_CARRENTAL_API\\BackEnd_DotnetCore\\Controllers\\CarController.cs",
               "RelativeDocumentMoniker": "Controllers\\CarController.cs",
@@ -119,8 +163,7 @@
               "RelativeToolTip": "Controllers\\CarController.cs",
               "ViewState": "AgIAAMEAAAAAAAAAAADwv8kAAAAcAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-22T11:08:09.42Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-09-22T11:08:09.42Z"
             }
           ]
         }
