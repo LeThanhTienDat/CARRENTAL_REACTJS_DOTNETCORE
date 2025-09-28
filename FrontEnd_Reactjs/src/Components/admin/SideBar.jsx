@@ -16,42 +16,42 @@ const menuItems = [
   {
     icons: <MdOutlineDashboard size={30} />,
     label: "Dashboard",
-    path: "/",
+    path: "/admin",
   },
   {
     icons: <TbCategoryFilled size={30} />,
     label: "Categories",
-    path:"/category"
+    path:"/admin/category"
   },
   {
     icons: <FaCar size={30} />,
     label: "Cars",
-    path:"/car"
+    path:"/admin/car"
   },
   {
     icons: <FaUser size={30} />,
     label: "User",
-    path:"/user"
+    path:"/admin/user"
   },
   {
     icons: <TbBrandBooking size={30} />,
     label: "Bookings",
-    path:"/booking"
+    path:"/admin/booking"
   },
   {
     icons: <CiSettings size={30} />,
     label: "Setting",
-    path:"/setting"
+    path:"/admin/setting"
   },
   {
     icons: <IoLogoBuffer size={30} />,
     label: "Log",
-    path:"/log"
+    path:"/admin/log"
   },
   {
     icons: <TbReportSearch size={30} />,
     label: "Report",
-    path:"/report"
+    path:"/admin/report"
   },
 ];
 

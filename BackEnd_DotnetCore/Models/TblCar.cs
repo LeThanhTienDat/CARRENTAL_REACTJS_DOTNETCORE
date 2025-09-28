@@ -17,8 +17,6 @@ public partial class TblCar
 
     public string? CarStatus { get; set; }
 
-    public string? Image { get; set; }
-
     public string? LicensePlate { get; set; }
 
     public int? SeatCount { get; set; }
@@ -35,6 +33,8 @@ public partial class TblCar
 
     public string? Address { get; set; }
 
+    public string? Slug { get; set; }
+
     public virtual TblCarType? CarType { get; set; }
 
     public virtual TblCategory? Cate { get; set; }
@@ -44,4 +44,6 @@ public partial class TblCar
     public virtual TblDistrict? District { get; set; }
 
     public virtual ICollection<TblBookingDetail> TblBookingDetails { get; set; } = new List<TblBookingDetail>();
+
+    public virtual ICollection<TblCarImage> TblCarImages { get; set; } = new List<TblCarImage>();
 }

@@ -1,16 +1,20 @@
 import { useFormik } from "formik";
 import { useEffect, useState } from "react";
-import { string, object, number, mixed } from "yup";
-import { UploadImgToCloudinary } from "../Helper/UploadHelper";
-import { RemoveCloudImg } from "../Helper/RemoveCloudImgHelper";
+import { string, object, number, mixed, array } from "yup";
+import { UploadImgToCloudinary } from "../../../Helper/UploadHelper";
+import { RemoveCloudImg } from "../../../Helper/RemoveCloudImgHelper";
+import { CiWarning } from "react-icons/ci";
+import { MdCancel } from "react-icons/md";
 
 export default function CarForm({ initialValues, onClose, mode, onSuccess }) {
   const [city, setCity] = useState([]);
   const [district, setDistrict] = useState([]);
   const [category, setCategory] = useState([]);
   const [carType, setCarType] = useState([]);
+  const [carImages, setCarImages] = useState([]);
+  const [preview, setPreview] = useState(initialValues?.carImages || []);
   const [imgUrl, setImgUrl] = useState(initialValues.image);
-  const [file, setFile] = useState(null);
+  // const [file, setFile] = useState(null);
   const [countFileChange, setCountFileChange] = useState(0);
   useEffect(() => {
     fetch("https://localhost:7191/api/City")
@@ -65,17 +69,24 @@ export default function CarForm({ initialValues, onClose, mode, onSuccess }) {
     carStatus: string().required(),
     carTypeId: number().required(),
     cateId: number().required(),
-    image: mixed().when([], {
-      is: () => mode === "add",
-      then: (schema) => schema.required("Image is required"),
-      otherwise: (schema) => schema.notRequired(),
-    }),
+    // carImages: array()
+    //   .min(1, "At least one image is required")
+    //   .required("At least one image is required"),
+    carImages: array().test(
+      "carImages-required",
+      "At least one image is required",
+      function (value) {
+        if (mode === "add") {
+          return value && value.length > 0;
+        }
+        return true;
+      }
+    ),
     active: number().required(),
     address: string().required(),
     cityId: number().required(),
   });
 
-  const [preview, setPreview] = useState(initialValues?.image || null);
   useEffect(() => {
     if (initialValues?.image) {
       setPreview(initialValues.image);
@@ -89,77 +100,88 @@ export default function CarForm({ initialValues, onClose, mode, onSuccess }) {
     return url;
   };
   const handleFileChange = async (e) => {
-    const selectedFile = e.target.files?.[0];
-    if (selectedFile) {
-      setFile(selectedFile);
-      setPreview(URL.createObjectURL(selectedFile));
-      await setFieldValue("image", "temp");
-      setFieldTouched("image", true);
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const selectedFiles = Array.from(files);
+      // setFile(selectedFile);
+      // setPreview(URL.createObjectURL(selectedFile));
+      setCarImages((prev) => [...prev, ...selectedFiles]);
+      setPreview((prev) => [
+        ...prev,
+        ...selectedFiles.map((file) => URL.createObjectURL(file)),
+      ]);
+      await setFieldValue("carImages", [...formik.values.carImages, ...selectedFiles]);
+      setFieldTouched("carImages", true);
     }
+  };
+  const removeImage = (imgIndex) => {
+    setCarImages((prev) => prev.filter((_, index) => index != imgIndex));
+    setPreview((prev) => prev.filter((_, index) => index != imgIndex));
   };
   const formik = useFormik({
     initialValues,
     onSubmit: async (data) => {
-      try {
-        if (mode === "add") {
-          if (file) {
-            const url = await handleUpload(file);
-            data.image = url;
-          }
-          const res = await fetch("https://localhost:7191/api/Car", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-          });
-          if (!res.ok) throw new Error("Add new Car failed!");
-          const newCar = await res.json();
-          console.log(newCar);
-          if (res.status === 201) {
-            alert("Add success!");
-            if (typeof onSuccess === "function") onSuccess(newCar, "add");
-          }
-          console.log(data);
-        } else if (mode === "edit") {
-          if (countFileChange === 0) {
-            data.image = null;
-          } else {
-            if (file) {
-              const url = await handleUpload(file);
-              data.image = url;
-            }
-          }
-          const res = await fetch(
-            `https://localhost:7191/api/Car/${data.carId}`,
-            {
-              method: "PUT",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(data),
-            }
-          );
-          if (!res.ok) throw new Error("Add new Car failed!");
-          const editedCar = await res.json();
-          if (res.status === 200) {
-            alert("Update success!");
-            await fetch("https://localhost:7191/api/cloudinary/delete", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(
-                imgUrl
-              ),
-            });
-            if (typeof onSuccess === "function") onSuccess(editedCar, "edit");
-          }
-        }
-      } catch (err) {
-        console.log(err);
-        alert(err.message || "something when wrong!");
-      } finally {
-        onClose();
-      }
+      // try {
+      //   if (mode === "add") {
+      //     if (file) {
+      //       const url = await handleUpload(file);
+      //       data.image = url;
+      //     }
+
+      //     const res = await fetch("https://localhost:7191/api/Car", {
+      //       method: "POST",
+      //       headers: {
+      //         "Content-Type": "application/json",
+      //       },
+      //       body: JSON.stringify(data),
+      //     });
+      //     if (!res.ok) throw new Error("Add new Car failed!");
+      //     const newCar = await res.json();
+      //     console.log(newCar);
+      //     if (res.status === 201) {
+      //       alert("Add success!");
+      //       if (typeof onSuccess === "function") onSuccess(newCar, "add");
+      //     }
+      //     console.log(data);
+      //   } else if (mode === "edit") {
+      //     if (countFileChange === 0) {
+      //       data.image = null;
+      //     } else {
+      //       if (file) {
+      //         const url = await handleUpload(file);
+      //         data.image = url;
+      //       }
+      //     }
+      //     const res = await fetch(
+      //       `https://localhost:7191/api/Car/${data.carId}`,
+      //       {
+      //         method: "PUT",
+      //         headers: {
+      //           "Content-Type": "application/json",
+      //         },
+      //         body: JSON.stringify(data),
+      //       }
+      //     );
+      //     if (!res.ok) throw new Error("Add new Car failed!");
+      //     const editedCar = await res.json();
+      //     if (res.status === 200) {
+      //       alert("Update success!");
+      //       await fetch("https://localhost:7191/api/cloudinary/delete", {
+      //         method: "POST",
+      //         headers: { "Content-Type": "application/json" },
+      //         body: JSON.stringify(imgUrl),
+      //       });
+      //       if (typeof onSuccess === "function") onSuccess(editedCar, "edit");
+      //     }
+      //   }
+      // } catch (err) {
+      //   console.log(err);
+      //   alert(err.message || "something when wrong!");
+      // } finally {
+      //   setCarImages([]);
+      //   onClose();
+      // }
+      console.log(data);
     },
     validationSchema: validator,
     enableReinitialize: true,
@@ -476,7 +498,10 @@ export default function CarForm({ initialValues, onClose, mode, onSuccess }) {
               <div className="flex justify-end gap-2 mt-10">
                 <button
                   className="px-4 py-2 bg-gray-300 rounded-md cursor-pointer"
-                  onClick={onClose}
+                  onClick={() => {
+                    setCarImages([]);
+                    onClose();
+                  }}
                   type="button"
                 >
                   Cancel
@@ -492,21 +517,25 @@ export default function CarForm({ initialValues, onClose, mode, onSuccess }) {
             <div className="w-1/2 me-3">
               <div className="ms-3  ">
                 <div className="relative">
-                  <input
-                    type="file"
-                    name="image"
-                    onChange={(e) => {
-                      if (mode === "edit")
-                        setCountFileChange((prev) => prev + 1);
-                      handleFileChange(e);
-                    }}
-                    className=" block w-full text-sm text-gray-700 
+                  <label htmlFor="">
+                    <input
+                      disabled={carImages.length == 4 ? true : false}
+                      type="file"
+                      multiple
+                      name="carImages"
+                      onChange={(e) => {
+                        if (mode === "edit")
+                          setCountFileChange((prev) => prev + 1);
+                        handleFileChange(e);
+                      }}
+                      className=" block w-full text-sm text-gray-700 
                                   file:mr-4 file:py-2 file:px-4
                                   file:rounded-md file:border-0
                                   file:text-sm file:font-semibold
                                   file:bg-blue-50 file:text-blue-600
                                   hover:file:bg-blue-100"
-                  />
+                    />
+                  </label>
                 </div>
                 {mode === "edit" && (
                   <p className="text-red-600 text-sm mt-1">
@@ -514,16 +543,32 @@ export default function CarForm({ initialValues, onClose, mode, onSuccess }) {
                   </p>
                 )}
                 <span className="block errorMess text-sm text-red-500 min-h-[20px]">
-                  {touched.image && errors.image ? errors.image : undefined}
+                  {touched.carImages && errors.carImages
+                    ? errors.carImages
+                    : undefined}
                 </span>
               </div>
+              <div className="w-1/2 flex flex-row items-center justify-center mx-4 px-1 rounded-lg bg-red-300">
+                <CiWarning /> Maximum 4 images
+              </div>
               {preview && (
-                <div className="flex justify-center m-1">
-                  <img
-                    src={preview}
-                    alt="preview"
-                    className="h-64 w-64 bject-cover rounded cursor-pointer border"
-                  />
+                <div className="grid grid-cols-2 grid-rows-2 items-center justify-between m-4 w-full gap-3">
+                  {preview.map((item, index) => (
+                    <div className="rounded-lg relative" key={index}>
+                      <img
+                        src={item}
+                        alt=""
+                        className="min-h-[130px] rounded-lg"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeImage(index)}
+                        className="absolute top-0 right-0 cursor-pointer text-white"
+                      >
+                        <MdCancel size={30} />
+                      </button>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>

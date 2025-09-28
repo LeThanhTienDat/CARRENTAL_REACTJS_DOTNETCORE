@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BackEnd_DotnetCore.Models;
 
-public partial class CarRentalApiContext : DbContext
+public partial class CarRentalApi2Context : DbContext
 {
-    public CarRentalApiContext()
+    public CarRentalApi2Context()
     {
     }
 
-    public CarRentalApiContext(DbContextOptions<CarRentalApiContext> options)
+    public CarRentalApi2Context(DbContextOptions<CarRentalApi2Context> options)
         : base(options)
     {
     }
@@ -22,6 +22,8 @@ public partial class CarRentalApiContext : DbContext
     public virtual DbSet<TblBookingDetail> TblBookingDetails { get; set; }
 
     public virtual DbSet<TblCar> TblCars { get; set; }
+
+    public virtual DbSet<TblCarImage> TblCarImages { get; set; }
 
     public virtual DbSet<TblCarType> TblCarTypes { get; set; }
 
@@ -37,7 +39,7 @@ public partial class CarRentalApiContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=localhost;Database=CAR_RENTAL_API;User Id=sa;Password=123456;TrustServerCertificate=True");
+        => optionsBuilder.UseSqlServer("Server=localhost;Database=CAR_RENTAL_API_2;User Id=sa;Password=123456;TrustServerCertificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -99,6 +101,9 @@ public partial class CarRentalApiContext : DbContext
             entity.Property(e => e.IsCancel)
                 .HasDefaultValue(0)
                 .HasColumnName("is_cancel");
+            entity.Property(e => e.IsConfirmed)
+                .HasDefaultValue(false)
+                .HasColumnName("is_confirmed");
             entity.Property(e => e.OrderDate).HasColumnName("order_date");
             entity.Property(e => e.Paid)
                 .HasDefaultValue(0)
@@ -190,9 +195,6 @@ public partial class CarRentalApiContext : DbContext
                 .HasMaxLength(20)
                 .HasColumnName("color");
             entity.Property(e => e.DistrictId).HasColumnName("district_id");
-            entity.Property(e => e.Image)
-                .HasMaxLength(200)
-                .HasColumnName("image");
             entity.Property(e => e.LicensePlate)
                 .HasMaxLength(50)
                 .HasColumnName("license_plate");
@@ -203,6 +205,10 @@ public partial class CarRentalApiContext : DbContext
                 .HasColumnType("decimal(18, 0)")
                 .HasColumnName("price_per_day");
             entity.Property(e => e.SeatCount).HasColumnName("seat_count");
+            entity.Property(e => e.Slug)
+                .HasMaxLength(200)
+                .IsUnicode(false)
+                .HasColumnName("slug");
 
             entity.HasOne(d => d.CarType).WithMany(p => p.TblCars)
                 .HasForeignKey(d => d.CarTypeId)
@@ -219,6 +225,25 @@ public partial class CarRentalApiContext : DbContext
             entity.HasOne(d => d.District).WithMany(p => p.TblCars)
                 .HasForeignKey(d => d.DistrictId)
                 .HasConstraintName("fk_tbl_Car_District_district_id");
+        });
+
+        modelBuilder.Entity<TblCarImage>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("pk_Car_Image_id");
+
+            entity.ToTable("tbl_Car_Image");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.CarId).HasColumnName("car_id");
+            entity.Property(e => e.Image)
+                .HasMaxLength(200)
+                .IsUnicode(false)
+                .HasColumnName("image");
+
+            entity.HasOne(d => d.Car).WithMany(p => p.TblCarImages)
+                .HasForeignKey(d => d.CarId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_Car_Image_Car_car_id");
         });
 
         modelBuilder.Entity<TblCarType>(entity =>

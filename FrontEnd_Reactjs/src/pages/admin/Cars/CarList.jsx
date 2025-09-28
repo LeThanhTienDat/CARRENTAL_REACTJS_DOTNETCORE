@@ -1,9 +1,9 @@
 import { FaPlus } from "react-icons/fa";
 import { useEffect, useMemo, useState } from "react";
 import CarForm from "./CarForm";
-import { addIndex } from "../Helper/AddIndexHelper";
+import { addIndex } from "../../../Helper/AddIndexHelper";
 import DeleteConfirm from "./DeleteConfirm";
-import { FilterButton } from "../assets/Components/FilterButton";
+import { FilterButton } from "../../../Components/admin/FilterButton";
 
 export default function CarList() {
   const [openForm, setOpenForm] = useState(false);
@@ -243,7 +243,7 @@ export default function CarList() {
             onChange={(e) => setCarsPerPage(Number(e.target.value))}
             value={carsPerPage}
           >
-            <option value={2}>2 Items/Page</option>
+            <option value={2}>2 Items/Page</option> 
             <option value={5}>5 Items/Page</option>
             <option value={10}>10 Items/Page</option>
             <option value={20}>20 Items/Page</option>
@@ -338,13 +338,14 @@ export default function CarList() {
               cateId: "",
               active: 1,
               address: "",
-              image: "",
+              carImages: [],
               cityId: null,
               districtId: null,
             }
           }
           onClose={() => setOpenForm(false)}
           onSuccess={handleAddEdit}
+          context={editInfo ? "edit" : "add"}
         />
       )}
       {openConfirmDelete && (

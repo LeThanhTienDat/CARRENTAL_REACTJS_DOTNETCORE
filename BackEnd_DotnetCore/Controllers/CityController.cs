@@ -13,9 +13,9 @@ namespace BackEnd_DotnetCore.Controllers
     [ApiController]
     public class CityController : ControllerBase
     {
-        private readonly CarRentalApiContext _context;
+        private readonly CarRentalApi2Context _context;
 
-        public CityController(CarRentalApiContext context)
+        public CityController(CarRentalApi2Context context)
         {
             _context = context;
         }

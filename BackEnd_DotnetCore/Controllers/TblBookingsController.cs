@@ -13,9 +13,9 @@ namespace BackEnd_DotnetCore.Controllers
     [ApiController]
     public class TblBookingsController : ControllerBase
     {
-        private readonly CarRentalApiContext _context;
+        private readonly CarRentalApi2Context _context;
 
-        public TblBookingsController(CarRentalApiContext context)
+        public TblBookingsController(CarRentalApi2Context context)
         {
             _context = context;
         }

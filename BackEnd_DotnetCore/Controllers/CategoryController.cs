@@ -13,9 +13,9 @@ namespace BackEnd_DotnetCore.Controllers
     [ApiController]
     public class CategoryController : ControllerBase
     {
-        private readonly CarRentalApiContext _context;
+        private readonly CarRentalApi2Context _context;
 
-        public CategoryController(CarRentalApiContext context)
+        public CategoryController(CarRentalApi2Context context)
         {
             _context = context;
         }

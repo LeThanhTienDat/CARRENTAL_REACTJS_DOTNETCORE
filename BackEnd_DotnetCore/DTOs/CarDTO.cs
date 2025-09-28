@@ -1,4 +1,6 @@
-﻿namespace BackEnd_DotnetCore.DTOs
+﻿using BackEnd_DotnetCore.Models;
+
+namespace BackEnd_DotnetCore.DTOs
 {
     public class CarDTO
     {
@@ -35,6 +37,8 @@
         public string? CityName {  get; set; }
 
         public string? Address { get; set; }
+        public string? Slug { get; set; }
+        public List<CarImageDTO> CarImages { get; set; } = new List<CarImageDTO>();
         public int OrderNumber { get; set; }
     }
 }

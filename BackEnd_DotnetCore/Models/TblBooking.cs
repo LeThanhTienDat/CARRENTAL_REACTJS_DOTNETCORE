@@ -39,6 +39,8 @@ public partial class TblBooking
 
     public int? PickupMethod { get; set; }
 
+    public bool? IsConfirmed { get; set; }
+
     public virtual TblCustomer? Cus { get; set; }
 
     public virtual TblPaymentType? PaymentType { get; set; }

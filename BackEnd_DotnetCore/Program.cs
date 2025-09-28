@@ -19,7 +19,7 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddDbContext<CarRentalApiContext>(options =>
+builder.Services.AddDbContext<CarRentalApi2Context>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionString"));
 });
