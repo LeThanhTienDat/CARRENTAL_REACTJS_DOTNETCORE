@@ -171,44 +171,47 @@ export default function CarForm({ initialValues, onClose, mode, onSuccess }) {
                 (p) => typeof p === "object" && p.image === initItem.image
               )
           );
-          const removedImageResult = await Promise.all(
-            prepareRemoveItems.map((item) => RemoveCloudImg(item.image))
-          );
-          console.log("remove result:", removedImageResult);
-          const newUrls = await Promise.all(
-            prepareUploadItems.map((carImage) => handleUpload(carImage))
-          );
-          console.log(newUrls);
-          const newImages = [
-            ...keepItems.map((item) => item.image),
-            ...newUrls,
-          ];
-          console.log("new urls:", newImages);
-
-          data.tblCarImages = newImages.map((image) => ({ image: image }));
+          if (prepareRemoveItems.length > 0) {
+            const removedImageResult = await Promise.all(
+              prepareRemoveItems.map((item) => RemoveCloudImg(item.image))
+            );
+            console.log("remove result:", removedImageResult);
+          }
           const resOfRemoveAllDatabaseImages = await fetch(
             `https://localhost:7191/api/CarImages/${data.carId}`,
             {
               method: "DELETE",
             }
           );
-          if (resOfRemoveAllDatabaseImages.ok) {
-            const res = await fetch(
-              `https://localhost:7191/api/Car/${data.carId}`,
-              {
-                method: "PUT",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify(data),
-              }
+          var newUrls = [];
+          if (prepareUploadItems.length > 0) {
+            newUrls = await Promise.all(
+              prepareUploadItems.map((carImage) => handleUpload(carImage))
             );
-            if (!res.ok) throw new Error("Add new Car failed!");
-            const editedCar = await res.json();
-            if (res.status === 200) {
-              alert("Update success!");
-              if (typeof onSuccess === "function") onSuccess(editedCar, "edit");
+          }
+          console.log("keepitems: ", keepItems);
+          const newImages = [
+            ...keepItems.map((item) => item.image),
+            ...newUrls,
+          ];
+          console.log("new urls:", newImages);
+          data.tblCarImages = newImages.map((image) => ({ image: image }));
+          console.log(data);
+          const res = await fetch(
+            `https://localhost:7191/api/Car/${data.carId}`,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(data),
             }
+          );
+          if (!res.ok) throw new Error("Add new Car failed!");
+          const editedCar = await res.json();
+          if (res.status === 200) {
+            alert("Update success!");
+            if (typeof onSuccess === "function") onSuccess(editedCar, "edit");
           }
         }
       } catch (err) {
