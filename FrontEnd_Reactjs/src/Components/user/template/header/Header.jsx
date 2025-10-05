@@ -6,7 +6,7 @@ export default function Header({ Login }) {
   const [openMenu, setOpenMenu] = useState(false);
   return (
     <>
-      <div className="flex flex-row px-[50px] lg:px-[100px] xl:px-[300px] py-1">
+      <div className="flex flex-row px-[50px] lg:px-[100px] 2xl:px-[300px] py-1">
         <a
           href="#"
           className="page-logo cursor-pointer w-2/4 flex flex-row gap-3 items-center"

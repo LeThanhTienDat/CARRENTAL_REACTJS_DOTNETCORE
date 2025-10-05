@@ -4,7 +4,9 @@ import { useParams } from "react-router-dom";
 import { IoLocationOutline } from "react-icons/io5";
 import { FormatCurrency } from "../../../Helper/formatCurrency";
 import DateTimeForm from "../../../Components/user/Form/DateTimeForm";
-
+import Lightbox from "react-image-lightbox";
+import "react-image-lightbox/style.css";
+import CarGallery from "../../../Components/user/car/LightBoxImageShow";
 
 export default function CarDetail() {
   const { slug, id } = useParams();
@@ -12,15 +14,28 @@ export default function CarDetail() {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [hireTime, setHireTime] = useState(() => endDate - startDate);
+  const [isOpen, setIsOpen] = useState(false);
+  const [photoIndex, setPhotoIndex] = useState(0);
+  const [rentalInfo, setRentalInfo] = useState(null);
+
+  const handleSetTime = (time) => {
+    setRentalInfo(time);
+    setOpenDatePicker(false);
+  };
+  useEffect(() => {
+    console.log("rentalInfo: ", rentalInfo);
+  }, [rentalInfo]);
 
   const [currentCar, setCurrentCar] = useState(null);
   useEffect(() => {
     fetch(`https://localhost:7191/api/Car/slug/${slug}/${id}`)
       .then((rep) => rep.json())
-      .then((data) => setCurrentCar(data))
+      .then((data) => setCurrentCar(data.value))
       .catch((err) => console.log(err));
   }, [slug, id]);
-
+  useEffect(() => {
+    console.log(currentCar);
+  }, [currentCar]);
   return currentCar == null ? (
     <>
       <Header />
@@ -29,14 +44,51 @@ export default function CarDetail() {
   ) : (
     <>
       <Header />
-      <div className="xl:px-[300px]">
-        <div className="flex flex-row gap-5">
-          <div className="w-1/3">
-            <h1 className="font-bold text-[30px]">{currentCar.model}</h1>
+      <div className="2xl:px-[300px] lg:px-[100px]">
+        <div className="grid xl:grid-cols-[65%_35%]">
+          <div className="w-full h-full">
+            <img
+              src={currentCar.carImages[0]?.image}
+              alt=""
+              className="w-full h-full object-cover rounded-2xl"
+            />
+          </div>
+          {/* Left column */}
+          <div className="grid grid-rows-3 grid-cols-1 sm:grid-cols-3 sm:grid-rows-1 xl:grid-rows-1 xl:grid-cols-1 h-full">
+            <div className="h-full xl:ps-1 xl:pb-1 pt-1 xl:pt-0">
+              <img
+                src={currentCar.carImages[1]?.image}
+                alt=""
+                className="w-full h-full xl:h-[250px] object-cover rounded-2xl"
+              />
+            </div>
+            <div className="h-full xl:ps-1 pt-1 xl:pt-0 ps-1 pe-1 xl:pe-0">
+              <img
+                src={currentCar.carImages[2]?.image}
+                alt=""
+                className="w-full h-full xl:h-[250px] object-cover rounded-2xl"
+              />
+            </div>
+            <div className="h-full xl:pt-1 xl:ps-1 pt-1">
+              <img
+                src={currentCar.carImages[3]?.image}
+                alt=""
+                className="w-full h-full xl:h-[250px] object-cover rounded-2xl"
+              />
+            </div>
+          </div>
+
+          {/* Right column */}
+        </div>
+        <div className="grid xl:grid-cols-[65%_35%]">
+          <div>
+            <h1 className="font-bold text-[37px]">{currentCar.model}</h1>
             <span className="flex flex-row items-center text-[24px] mb-5">
               <IoLocationOutline />{" "}
               {currentCar.districtName + ", " + currentCar.cityName}
             </span>
+          </div>
+          <div className="mt-5">
             <div className=" border-1 border-gray-300 rounded-lg w-full bg-[#f7fbff]">
               <div className="flex flex-row gap-1 items-center px-3 my-3">
                 <h1 className="font-bold text-[23px] text-[#8cd289]">
@@ -45,18 +97,23 @@ export default function CarDetail() {
                 <span>/Ngày</span>
               </div>
               <div className="flex flex-row mx-3 rounded-lg border-1 border-gray-300 bg-white py-3">
-                <button className="w-1/2 border-r border-gray-300 flex flex-col cursor-pointer" onClick={()=>setOpenDatePicker(true)}>
-                  <h2 className="font-bold">Nhận xe</h2>
-                  <div className="flex flex-row items-center justify-center gap-5">
-                    <h2>27/9/2025</h2>
-                    <h2>21:00</h2>
+                <button
+                  onClick={() => setOpenDatePicker(true)}
+                  className="flex flex-row mx-3 w-full"
+                >
+                  <div className="w-1/2 border-r border-gray-300 flex flex-col cursor-pointer">
+                    <h2 className="font-bold">Nhận xe</h2>
+                    <div className="flex flex-row items-center justify-center gap-5">
+                      <h2>27/9/2025</h2>
+                      <h2>21:00</h2>
+                    </div>
                   </div>
-                </button>
-                <button className="w-1/2 flex flex-col cursor-pointer">
-                  <h2 className="font-bold">Trả xe</h2>
-                  <div className="flex flex-row items-center justify-center gap-5">
-                    <h2>27/9/2025</h2>
-                    <h2>21:00</h2>
+                  <div className="w-1/2 flex flex-col cursor-pointer">
+                    <h2 className="font-bold">Trả xe</h2>
+                    <div className="flex flex-row items-center justify-center gap-5">
+                      <h2>27/9/2025</h2>
+                      <h2>21:00</h2>
+                    </div>
                   </div>
                 </button>
               </div>
@@ -74,7 +131,9 @@ export default function CarDetail() {
                   </div>
                   <div className="flex flex-row gap-3 items-center">
                     <IoLocationOutline />
-                    <h1 htmlFor="">{currentCar.districtName + ", "+currentCar.cityName}</h1>
+                    <h1 htmlFor="">
+                      {currentCar.districtName + ", " + currentCar.cityName}
+                    </h1>
                   </div>
                 </div>
               </div>
@@ -84,16 +143,14 @@ export default function CarDetail() {
               </div>
             </div>
           </div>
-          <div className="w-2/3">
-            <img src={currentCar.image} alt="" className="rounded-lg" />
-          </div>
         </div>
       </div>
-      {
-        openDatePicker && (
-            <DateTimeForm />
-        )
-      }
+      {openDatePicker && (
+        <DateTimeForm
+          onClose={() => setOpenDatePicker(false)}
+          onConfirm={handleSetTime}
+        />
+      )}
     </>
   );
 }
