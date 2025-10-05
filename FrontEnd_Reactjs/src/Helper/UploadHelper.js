@@ -8,6 +8,7 @@ export const UploadImgToCloudinary = async (file, rawName = null) => {
   formData.append("folder", "CARRENTAL_API/Images");
 
   const newName = ChangeNameImg(rawName);
+  console.log(newName);
 
   if(newName) {
     formData.append("public_id",newName);

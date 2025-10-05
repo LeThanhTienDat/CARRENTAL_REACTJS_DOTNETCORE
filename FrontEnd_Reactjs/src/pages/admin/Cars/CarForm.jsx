@@ -12,20 +12,25 @@ export default function CarForm({ initialValues, onClose, mode, onSuccess }) {
   const [category, setCategory] = useState([]);
   const [carType, setCarType] = useState([]);
   const [carImages, setCarImages] = useState([]);
-  const [preview, setPreview] = useState(initialValues?.carImages || []);
-  const [imgUrl, setImgUrl] = useState(initialValues.image);
-  // const [file, setFile] = useState(null);
+  const [preview, setPreview] = useState([]);
   const [countFileChange, setCountFileChange] = useState(0);
+  useEffect(() => {
+    if (initialValues?.carImages && mode == "edit") {
+      setPreview(initialValues.carImages);
+      setCarImages(initialValues.carImages);
+    }
+  }, [initialValues, mode]);
+  useEffect(() => {
+    console.log("carImages updated:", carImages);
+  }, [carImages]);
   useEffect(() => {
     fetch("https://localhost:7191/api/City")
       .then((rep) => rep.json())
       .then((data) => {
         setCity(data);
-        console.log(data);
       })
       .catch((err) => console.log(err));
   }, []);
-
   useEffect(() => {
     if (mode === "edit" && initialValues?.cityId) {
       const fetchDistrict = async () => {
@@ -72,7 +77,7 @@ export default function CarForm({ initialValues, onClose, mode, onSuccess }) {
     // carImages: array()
     //   .min(1, "At least one image is required")
     //   .required("At least one image is required"),
-    carImages: array().test(
+    tblCarImages: array().test(
       "carImages-required",
       "At least one image is required",
       function (value) {
@@ -103,17 +108,24 @@ export default function CarForm({ initialValues, onClose, mode, onSuccess }) {
     const files = e.target.files;
     if (files && files.length > 0) {
       const selectedFiles = Array.from(files);
-      // setFile(selectedFile);
-      // setPreview(URL.createObjectURL(selectedFile));
       setCarImages((prev) => [...prev, ...selectedFiles]);
       setPreview((prev) => [
         ...prev,
         ...selectedFiles.map((file) => URL.createObjectURL(file)),
       ]);
-      await setFieldValue("carImages", [...formik.values.carImages, ...selectedFiles]);
-      setFieldTouched("carImages", true);
+      await setFieldValue("tblCarImages", [
+        ...formik.values.tblCarImages,
+        ...selectedFiles,
+      ]);
+      setFieldTouched("tblCarImages", true);
     }
   };
+  useEffect(() => {
+    const check = preview.filter(
+      (item) => typeof item === "string" && item.startsWith("blob:")
+    );
+    console.log(check);
+  }, [preview]);
   const removeImage = (imgIndex) => {
     setCarImages((prev) => prev.filter((_, index) => index != imgIndex));
     setPreview((prev) => prev.filter((_, index) => index != imgIndex));
@@ -121,67 +133,92 @@ export default function CarForm({ initialValues, onClose, mode, onSuccess }) {
   const formik = useFormik({
     initialValues,
     onSubmit: async (data) => {
-      // try {
-      //   if (mode === "add") {
-      //     if (file) {
-      //       const url = await handleUpload(file);
-      //       data.image = url;
-      //     }
+      try {
+        if (mode === "add") {
+          if (data.tblCarImages && data.tblCarImages.length > 0) {
+            const urls = await Promise.all(
+              data.tblCarImages.map((carImage) => handleUpload(carImage))
+            );
+            data.tblCarImages = urls.map((url) => ({ image: url }));
+            console.log(data);
+          }
 
-      //     const res = await fetch("https://localhost:7191/api/Car", {
-      //       method: "POST",
-      //       headers: {
-      //         "Content-Type": "application/json",
-      //       },
-      //       body: JSON.stringify(data),
-      //     });
-      //     if (!res.ok) throw new Error("Add new Car failed!");
-      //     const newCar = await res.json();
-      //     console.log(newCar);
-      //     if (res.status === 201) {
-      //       alert("Add success!");
-      //       if (typeof onSuccess === "function") onSuccess(newCar, "add");
-      //     }
-      //     console.log(data);
-      //   } else if (mode === "edit") {
-      //     if (countFileChange === 0) {
-      //       data.image = null;
-      //     } else {
-      //       if (file) {
-      //         const url = await handleUpload(file);
-      //         data.image = url;
-      //       }
-      //     }
-      //     const res = await fetch(
-      //       `https://localhost:7191/api/Car/${data.carId}`,
-      //       {
-      //         method: "PUT",
-      //         headers: {
-      //           "Content-Type": "application/json",
-      //         },
-      //         body: JSON.stringify(data),
-      //       }
-      //     );
-      //     if (!res.ok) throw new Error("Add new Car failed!");
-      //     const editedCar = await res.json();
-      //     if (res.status === 200) {
-      //       alert("Update success!");
-      //       await fetch("https://localhost:7191/api/cloudinary/delete", {
-      //         method: "POST",
-      //         headers: { "Content-Type": "application/json" },
-      //         body: JSON.stringify(imgUrl),
-      //       });
-      //       if (typeof onSuccess === "function") onSuccess(editedCar, "edit");
-      //     }
-      //   }
-      // } catch (err) {
-      //   console.log(err);
-      //   alert(err.message || "something when wrong!");
-      // } finally {
-      //   setCarImages([]);
-      //   onClose();
-      // }
-      console.log(data);
+          const res = await fetch("https://localhost:7191/api/Car", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          });
+          if (!res.ok) throw new Error("Add new Car failed!");
+          const newCar = await res.json();
+          console.log(newCar);
+
+          if (res.status === 201) {
+            alert("Add success!");
+            if (typeof onSuccess === "function") onSuccess(newCar, "add");
+          }
+          console.log(data);
+        } else if (mode === "edit") {
+          const initImages = initialValues.carImages;
+          const prepareUploadItems = carImages.filter(
+            (item) => item instanceof File
+          );
+          const keepItems = carImages.filter((item) => !(item instanceof File));
+          const prepareRemoveItems = initImages.filter(
+            (initItem) =>
+              !preview.some(
+                (p) => typeof p === "object" && p.image === initItem.image
+              )
+          );
+          const removedImageResult = await Promise.all(
+            prepareRemoveItems.map((item) => RemoveCloudImg(item.image))
+          );
+          console.log("remove result:", removedImageResult);
+          const newUrls = await Promise.all(
+            prepareUploadItems.map((carImage) => handleUpload(carImage))
+          );
+          console.log(newUrls);
+          const newImages = [
+            ...keepItems.map((item) => item.image),
+            ...newUrls,
+          ];
+          console.log("new urls:", newImages);
+
+          data.tblCarImages = newImages.map((image) => ({ image: image }));
+          const resOfRemoveAllDatabaseImages = await fetch(
+            `https://localhost:7191/api/CarImages/${data.carId}`,
+            {
+              method: "DELETE",
+            }
+          );
+          if (resOfRemoveAllDatabaseImages.ok) {
+            const res = await fetch(
+              `https://localhost:7191/api/Car/${data.carId}`,
+              {
+                method: "PUT",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+              }
+            );
+            if (!res.ok) throw new Error("Add new Car failed!");
+            const editedCar = await res.json();
+            if (res.status === 200) {
+              alert("Update success!");
+              if (typeof onSuccess === "function") onSuccess(editedCar, "edit");
+            }
+          }
+        }
+      } catch (err) {
+        console.log(err);
+        alert(err.message || "something when wrong!");
+      } finally {
+        setCarImages([]);
+        onClose();
+      }
+      // console.log(data);
     },
     validationSchema: validator,
     enableReinitialize: true,
@@ -500,6 +537,7 @@ export default function CarForm({ initialValues, onClose, mode, onSuccess }) {
                   className="px-4 py-2 bg-gray-300 rounded-md cursor-pointer"
                   onClick={() => {
                     setCarImages([]);
+                    setPreview([]);
                     onClose();
                   }}
                   type="button"
@@ -522,7 +560,7 @@ export default function CarForm({ initialValues, onClose, mode, onSuccess }) {
                       disabled={carImages.length == 4 ? true : false}
                       type="file"
                       multiple
-                      name="carImages"
+                      name="tblCarImages"
                       onChange={(e) => {
                         if (mode === "edit")
                           setCountFileChange((prev) => prev + 1);
@@ -543,20 +581,40 @@ export default function CarForm({ initialValues, onClose, mode, onSuccess }) {
                   </p>
                 )}
                 <span className="block errorMess text-sm text-red-500 min-h-[20px]">
-                  {touched.carImages && errors.carImages
-                    ? errors.carImages
+                  {touched.tblCarImages && errors.tblCarImages
+                    ? errors.tblCarImages
                     : undefined}
                 </span>
               </div>
               <div className="w-1/2 flex flex-row items-center justify-center mx-4 px-1 rounded-lg bg-red-300">
                 <CiWarning /> Maximum 4 images
               </div>
-              {preview && (
+              {preview && mode == "add" && (
                 <div className="grid grid-cols-2 grid-rows-2 items-center justify-between m-4 w-full gap-3">
                   {preview.map((item, index) => (
                     <div className="rounded-lg relative" key={index}>
                       <img
                         src={item}
+                        alt=""
+                        className="min-h-[130px] rounded-lg"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeImage(index)}
+                        className="absolute top-0 right-0 cursor-pointer text-white"
+                      >
+                        <MdCancel size={30} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {preview && mode == "edit" && (
+                <div className="grid grid-cols-2 grid-rows-2 items-center justify-between m-4 w-full gap-3">
+                  {preview.map((item, index) => (
+                    <div className="rounded-lg relative" key={index}>
+                      <img
+                        src={item.image || item}
                         alt=""
                         className="min-h-[130px] rounded-lg"
                       />

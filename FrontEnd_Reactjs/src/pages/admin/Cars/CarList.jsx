@@ -113,6 +113,7 @@ export default function CarList() {
     setOpenForm(true);
   };
   const handleEdit = (carInfo) => {
+    console.log(carInfo);
     setEditInfo(carInfo);
     setOpenForm(true);
   };
@@ -153,9 +154,9 @@ export default function CarList() {
         </div>
       </div>
       <div className="flex flex-row gap-5">
-        <FilterButton  children={"Filter by Price Per Day"}/>
-        <FilterButton  children={"Filter by Seat Count"}/>
-        <FilterButton  children={"Filter by Name"}/>
+        <FilterButton children={"Filter by Price Per Day"} />
+        <FilterButton children={"Filter by Seat Count"} />
+        <FilterButton children={"Filter by Name"} />
       </div>
       <div class="overflow-x-auto mt-3">
         <table class="min-w-full border border-gray-300 ">
@@ -243,7 +244,7 @@ export default function CarList() {
             onChange={(e) => setCarsPerPage(Number(e.target.value))}
             value={carsPerPage}
           >
-            <option value={2}>2 Items/Page</option> 
+            <option value={2}>2 Items/Page</option>
             <option value={5}>5 Items/Page</option>
             <option value={10}>10 Items/Page</option>
             <option value={20}>20 Items/Page</option>
@@ -338,7 +339,7 @@ export default function CarList() {
               cateId: "",
               active: 1,
               address: "",
-              carImages: [],
+              tblCarImages: [],
               cityId: null,
               districtId: null,
             }
